@@ -8,6 +8,7 @@ const {
   fetchStudent,
   getCourses,
   assignToCourse,
+  removeCourse,
 } = require("../Controllers/studentController.js");
 
 router.param("studentID", async (request, response, next, studentID) => {
@@ -29,6 +30,8 @@ router.post("/", studentCreate);
 router.get("/:studentID/courses", getCourses);
 
 router.post("/:studentID/courses", assignToCourse);
+
+router.delete("/:studentID/courses", removeCourse);
 
 router.put("/:studentID", studentUpdate);
 

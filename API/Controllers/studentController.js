@@ -88,6 +88,18 @@ exports.assignToCourse = async (req, res, next) => {
   }
 };
 
+exports.removeCourse = async (req, res, next) => {
+  try {
+    const course = await Course.findByPk(req.body.courseId);
+
+    req.student.removeCourse(course);
+
+    res.status(200).end();
+  } catch (error) {
+    next(error);
+  }
+};
+
 exports.getCourses = async (req, res, next) => {
   try {
     res.json(req.student.courses);
