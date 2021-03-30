@@ -46,16 +46,11 @@ db.Sequelize = Sequelize;
 //relationships
 
 //college relationship
-
 db.College.hasMany(db.Course, {
   as: "courses",
   foreignKey: "collegeId",
   allowNull: false,
 });
-
-//db.College.hasMany(db.Student);
-
-//course relationships:
 
 db.Course.belongsTo(db.College, {
   as: "college",
@@ -63,18 +58,33 @@ db.Course.belongsTo(db.College, {
   allowNull: false,
 });
 
-db.Course.belongsToMany(db.Student, {
-  through: "Course-Student",
-  as: "student",
-  foreignKey: "courseId",
+/**
+ * many-to-many relationship
+ *
+ * We need 2 `belongsToMany` that goes both ways
+ *
+ * e.g. db.Foo.belongsToMany(db.Bar, options)
+ *      db.Bar.belongsToMany(db.Foo, options)
+ *
+ * for the options:
+ * {
+ *    through: name of the through table in the db
+ *    as: the name of the array on the fetched object
+ *    foreignKey: the ambassador that you send to the through table (perspective of first model)
+ * }
+ */
+
+// student course relationship
+db.Student.belongsToMany(db.Course, {
+  through: "StudentCourse",
+  as: "courses",
+  foreignKey: "studentId",
 });
 
-//student relationship:
-
-db.Student.belongsToMany(db.Course, {
-  through: "Course-Student",
-  as: "course",
-  foreignKey: "studentId",
+db.Course.belongsToMany(db.Student, {
+  through: "StudentCourse",
+  as: "students",
+  foreignKey: "courseId",
 });
 
 module.exports = db;

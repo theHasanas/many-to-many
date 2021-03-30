@@ -1,10 +1,24 @@
-const { Course } = require("../../db/models");
-const { Student } = require("../../db/models");
+const { Course, Student, College } = require("../../db/models");
 
 //fetching
 exports.fetchCourse = async (courseId, next) => {
   try {
-    const course = await Course.findByPk(courseId);
+    const course = await Course.findByPk(courseId, {
+      include: [
+        {
+          model: Student,
+          as: "students",
+          attributes: ["id", "name"],
+          through: {
+            attributes: [],
+          },
+        },
+        {
+          model: College,
+          as: "college",
+        },
+      ],
+    });
     return course;
   } catch (error) {
     next(error);
@@ -20,7 +34,7 @@ exports.courseList = async (request, response, next) => {
       include: [
         {
           model: Student,
-          as: "student",
+          as: "students",
           attributes: ["id", "name"],
           through: {
             attributes: [],
@@ -51,10 +65,6 @@ exports.courseList = async (request, response, next) => {
 exports.courseCreate = async (request, response, next) => {
   try {
     const newCourse = await Course.create(request.body);
-    await request.body.studentId.forEach(async (id) => {
-      const student = await Student.findByPk(id);
-      newCourse.addStudent(student);
-    });
 
     response.status(201).json(newCourse);
   } catch (error) {
@@ -79,6 +89,29 @@ exports.courseDelete = async (request, response, next) => {
   try {
     await request.course.destroy();
     response.status(204).end();
+  } catch (error) {
+    next(error);
+  }
+};
+
+// optionally decide if array or not
+exports.addStudents = async (req, res, next) => {
+  try {
+    const students = await Student.findAll({
+      where: { id: req.body.studentIds },
+    });
+
+    req.course.addStudents(students);
+
+    res.status(200);
+  } catch (error) {
+    next(error);
+  }
+};
+
+exports.getStudents = async (req, res, next) => {
+  try {
+    res.json(req.course.students);
   } catch (error) {
     next(error);
   }

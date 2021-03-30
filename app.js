@@ -10,8 +10,9 @@ const courseRouter = require("./API/Routers/courseRouter");
 app.use(cors());
 app.use(express.json()); //instead of body-parser
 
-app.use("/students", studentRouter);
 app.use("/colleges", collegeRouter);
+
+app.use("/students", studentRouter);
 app.use("/courses", courseRouter);
 
 app.use((error, request, response, next) => {
@@ -23,10 +24,10 @@ app.use((error, request, response, next) => {
 
 const run = async () => {
   try {
-    await db.sequelize.sync();
+    await db.sequelize.sync({ force: false });
     console.log("Connection to the database successful!");
-    await app.listen(8002, () => {
-      console.log("The application is running on localhost:8002");
+    await app.listen(8000, () => {
+      console.log("The application is running on localhost:8000");
     });
   } catch (error) {
     console.error("Error connecting to the database: ", error);

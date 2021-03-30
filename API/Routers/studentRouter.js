@@ -6,6 +6,8 @@ const {
   studentUpdate,
   studentDelete,
   fetchStudent,
+  getCourses,
+  assignToCourse,
 } = require("../Controllers/studentController.js");
 
 router.param("studentID", async (request, response, next, studentID) => {
@@ -23,6 +25,10 @@ router.param("studentID", async (request, response, next, studentID) => {
 router.get("/", studentList);
 
 router.post("/", studentCreate);
+
+router.get("/:studentID/courses", getCourses);
+
+router.post("/:studentID/courses", assignToCourse);
 
 router.put("/:studentID", studentUpdate);
 
